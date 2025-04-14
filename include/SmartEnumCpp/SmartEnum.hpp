@@ -73,7 +73,7 @@ public:
     /**
      * @brief Implicit conversion to the underlying value type.
      */
-    inline operator TValue () const { return value; }
+    inline operator TValue () const { return value_; }
 
     /**
      * @brief Compares equality based on the underlying value.

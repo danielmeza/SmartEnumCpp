@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
-#include "SmartEnum.hpp"
-#include "SmartFlagEnum.hpp"
-#include "SmartEnumSwitch.hpp"
+#include "SmartEnumCpp/SmartEnum.hpp"
+#include "SmartEnumCpp/SmartFlagEnum.hpp"
+#include "SmartEnumCpp/SmartEnumSwitch.hpp"
 
 // Define a simple TestEnum for testing
 class TestEnum : public SmartEnum<TestEnum>

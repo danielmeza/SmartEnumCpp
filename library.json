@@ -21,16 +21,26 @@
     "platforms": "*",
     "export": {
         "include": [
-            "src"
+            "include"
         ],
         "exclude": [
             "examples",
             "test"
         ]
     },
+    "build": {
+        "flags":
+        [
+            "-Iinclude"
+        ],
+        "srcFilter": [
+            "-<*>",
+            "+<include/*.hpp>"
+        ]
+    },
     "headers": [
-        "SmartEnum.h",
-        "SmartEnumSwitch.h",
-        "SmartFlagEnum.h"
+        "SmartEnum/SmartEnum.hpp",
+        "SmartEnum/SmartEnumSwitch.hpp",
+        "SmartEnum/SmartFlagEnum.hpp"
     ]
 }
