@@ -1,7 +1,0 @@
-#include <gtest/gtest.h>
-#include "SmartEnum.h"
-
-TEST(SmartEnumTest, ExampleTest) {
-    SmartEnum example = SmartEnum::Value1;
-    EXPECT_EQ(example, SmartEnum::Value1);
-}
