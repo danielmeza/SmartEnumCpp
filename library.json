@@ -2,6 +2,12 @@
     "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
     "name": "SmartEnumCpp",
     "version": "1.0.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/danielmeza/SmartEnumCpp.git",
+        "branch": "main"
+    },
+    "homepage": "https://github.com/danielmeza/SmartEnumCpp",
     "description": "A C++ library for creating smart enumerations with type safety and easy-to-use syntax. Ispired by the  C# SmartEnum library.",
     "keywords": [
         "C++",
