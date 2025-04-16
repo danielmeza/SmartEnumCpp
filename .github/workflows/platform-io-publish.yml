@@ -73,7 +73,6 @@ jobs:
           
       - name: Publish to PlatformIO Registry
         run: |
-          export PLATFORMIO_AUTH_TOKEN=${{ secrets.PLATFORMIO_AUTH_TOKEN }}
           pio pkg publish --no-interactive
         env:
           PLATFORMIO_AUTH_TOKEN: ${{ secrets.PLATFORMIO_AUTH_TOKEN }}
