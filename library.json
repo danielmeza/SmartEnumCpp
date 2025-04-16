@@ -75,7 +75,7 @@
             "name": "Polymorphic",
             "base": "examples/polymorphic",
             "files": [
-                "smart_enum_polymorphic.cpp"
+                "polymorphic_smart_enum.cpp"
             ]
         }
     ]
