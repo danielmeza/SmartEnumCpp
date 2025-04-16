@@ -1,0 +1,67 @@
+name: PlatformIO Library Publish
+
+on:
+    push:
+        tags:
+            - 'v*'  # Trigger on version tags
+    workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  build_and_publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Cache PlatformIO dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-pio-${{ hashFiles('**/platformio.ini') }}
+          restore-keys: ${{ runner.os }}-pio-
+              
+      - name: Install PlatformIO CLI
+        run: |
+            python -m pip install --upgrade pip
+            pip install platformio
+      - name: Test the library
+        run: pio test -e native
+      - name: Update version in library.json
+        run: |
+          if [[ $GITHUB_REF == refs/tags/v* ]]; then
+            # Extract version from tag (without the 'v' prefix)
+            VERSION=${GITHUB_REF#refs/tags/v}
+            echo "Updating library.json version to $VERSION from tag"
+            jq ".version = \"$VERSION\"" library.json > temp.json && mv temp.json library.json
+          else
+            echo "No version tag detected, skipping version update"
+          fi
+      - name: Package the library
+        run: |
+          mkdir -p artifacts
+          pio pkg pack -output artifacts/platformio-library.tar.gz
+      - name: Archive the library package
+        uses: actions/upload-artifact@v4
+        with:
+          name: platformio-library
+          path: artifacts/platformio-library.tar.gz
+      - name: Attach package to current github release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: artifacts/platformio-library.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+      - name: Publish to PlatformIO Registry
+        run: pio pkg publish --type library --no-interactive
+        env:
+          PLATFORMIO_AUTH_TOKEN: ${{ secrets.PLATFORMIO_AUTH_TOKEN }}
+      
+      
+        
