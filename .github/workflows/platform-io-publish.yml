@@ -5,10 +5,12 @@ on:
         tags:
             - "v*.*.*"  # Trigger on version tags
     workflow_dispatch:  # Allow manual trigger
-
 jobs:
   build_and_publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Read access to the repository contents
+      id-token: write  # Write access to the ID token for authentication
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
