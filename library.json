@@ -27,10 +27,10 @@
     "platforms": "*",
     "export": {
         "include": [
+            "examples",
             "include"
         ],
         "exclude": [
-            "examples",
             "test"
         ]
     },
@@ -61,7 +61,7 @@
             "name": "Switch",
             "base": "examples/switch",
             "files": [
-                "mart_enum_switch.cpp"
+                "smart_enum_switch.cpp"
             ]
         },
         {
