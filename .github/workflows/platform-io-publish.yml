@@ -3,7 +3,7 @@ name: PlatformIO Library Publish
 on:
     push:
         tags:
-            - 'v*'  # Trigger on version tags
+            - "v*.*.*"  # Trigger on version tags
     workflow_dispatch:  # Allow manual trigger
 
 jobs:
@@ -29,8 +29,10 @@ jobs:
         run: |
             python -m pip install --upgrade pip
             pip install platformio
+
       - name: Test the library
         run: pio test -e native
+
       - name: Update version in library.json
         run: |
           if [[ $GITHUB_REF == refs/tags/v* ]]; then
@@ -41,23 +43,27 @@ jobs:
           else
             echo "No version tag detected, skipping version update"
           fi
+
       - name: Package the library
         run: |
           mkdir -p artifacts
           pio pkg pack -o artifacts/platformio-library.tar.gz
+
       - name: Archive the library package
         uses: actions/upload-artifact@v4
         with:
           name: platformio-library
           path: artifacts/platformio-library.tar.gz
-      - name: Attach package to current github release
-        uses: softprops/action-gh-release@v1
+
+      - name: Attach package to a existing github release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: svenstaro/upload-release-action@v2
         with:
-          tag_name: ${{ github.ref_name }}
-          files: artifacts/platformio-library.tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: artifacts/platformio-library.tar.gz
+          tag: ${{ github.ref }}
+          overwrite: true
+          
       - name: Publish to PlatformIO Registry
         run: pio pkg publish --type library --no-interactive
         env:
