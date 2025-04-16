@@ -1,0 +1,54 @@
+{
+  "name": "SmartEnumCpp",
+  "version": "1.0.0",
+  "authors": [
+    {
+      "name": "Daniel Meza",
+      "email": "daniel.meza2011@gmail.com",
+      "maintainer": true
+    }
+  ],
+  "description": "A C++ library for creating smart enumerations with type safety and easy-to-use syntax. Ispired by the  C# SmartEnum library.",
+  "homepage": "https://github.com/danielmeza/SmartEnumCpp",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/danielmeza/SmartEnumCpp.git",
+    "branch": "main"
+  },
+  "export": {
+    "exclude": [
+      "examples",
+      "test"
+    ]
+  },
+  "examples": [
+    {
+      "name": "Examples",
+      "base": "examples",
+      "files": [
+        "polymorphic_smart_enum.cpp",
+        "smart_enum_switch.cpp",
+        "basic_smart_enum.cpp",
+        "smart_flag_enum.cpp"
+      ]
+    }
+  ],
+  "keywords": [
+    "c++",
+    "smartenum",
+    "enum",
+    "type safety"
+  ],
+  "platforms": [
+    "*"
+  ],
+  "frameworks": [
+    "*"
+  ],
+  "headers": [
+    "SmartEnum/SmartEnum.hpp",
+    "SmartEnum/SmartEnumSwitch.hpp",
+    "SmartEnum/SmartFlagEnum.hpp"
+  ]
+}

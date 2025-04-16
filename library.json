@@ -48,5 +48,35 @@
         "SmartEnum/SmartEnum.hpp",
         "SmartEnum/SmartEnumSwitch.hpp",
         "SmartEnum/SmartFlagEnum.hpp"
+    ],
+    "examples": [
+        {
+            "name": "Basic",
+            "base": "examples/basic",
+            "files": [
+                "basic_smart_enum.cpp"
+            ]
+        },
+        {
+            "name": "Switch",
+            "base": "examples/switch",
+            "files": [
+                "mart_enum_switch.cpp"
+            ]
+        },
+        {
+            "name": "Flags",
+            "base": "examples/flags",
+            "files": [
+                "smart_flag_enum.cpp"
+            ]
+        },
+        {
+            "name": "Polymorphic",
+            "base": "examples/polymorphic",
+            "files": [
+                "smart_enum_polymorphic.cpp"
+            ]
+        }
     ]
 }

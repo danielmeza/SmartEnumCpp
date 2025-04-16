@@ -1,11 +1,67 @@
+# SmartEnumCpp Testing
 
-This directory is intended for PlatformIO Test Runner and project tests.
+This directory contains tests for the SmartEnumCpp library using Google Test framework.
 
-Unit Testing is a software testing method by which individual units of
-source code, sets of one or more MCU program modules together with associated
-control data, usage procedures, and operating procedures, are tested to
-determine whether they are fit for use. Unit testing finds problems early
-in the development cycle.
+## Test Environments
 
-More information about PlatformIO Unit Testing:
-- https://docs.platformio.org/en/latest/advanced/unit-testing/index.html
+The project supports multiple test environments:
+
+### Native Testing
+
+Run tests on your local machine without hardware or emulation:
+
+```bash
+pio test -e native
+```
+
+### ESP32 Hardware Testing
+
+Run tests on a physical ESP32 device:
+
+```bash
+pio test -e esp32dev
+```
+
+### ESP32 QEMU Testing
+
+Run tests using ESP32 emulation with QEMU (no hardware required):
+
+```bash
+pio test -e esp32-qemu
+```
+
+## Test Structure
+
+- `test_main.cpp`: Main entry point that initializes Google Test
+  - Handles both native and ESP32 environments
+  - For ESP32, runs tests in a FreeRTOS task with proper memory allocation
+
+- `test_SmartEnum.cpp`: Tests for SmartEnum functionality
+  - Basic SmartEnum operations (lookup, equality, conversion)
+  - Polymorphic SmartEnum behaviors
+  - SmartFlagEnum operations and validations
+  - SmartEnumSwitch fluent interface
+
+## Debugging Tests
+
+When using QEMU, you can debug tests by examining the console output. The tests will print detailed information about what's being tested and any failures encountered.
+
+## Adding New Tests
+
+To add new test files:
+
+1. Create a new C++ file in the test/ directory with the prefix `test_`
+2. Include the Google Test header and your library headers
+3. Use the `TEST` macro to define test cases
+4. The test runner will automatically discover and execute your tests
+
+Example:
+```cpp
+#include <gtest/gtest.h>
+#include "SmartEnumCpp/SmartEnum.hpp"
+
+TEST(MyNewTest, TestCase) {
+    // Your test code here
+    EXPECT_TRUE(true);
+}
+```
