@@ -7,11 +7,7 @@ on:
     workflow_dispatch:  # Allow manual trigger
 jobs:
   build_and_publish:
-    env:
-      # Define environment variables with secrets
-      # PLATFORMIO_AUTH_TOKEN must be set in repository secrets
-      # for publishing to the PlatformIO registry
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    environment: Prod
     runs-on: ubuntu-latest
     permissions:
       contents: write  # Read access to the repository contents
