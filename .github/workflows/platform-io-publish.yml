@@ -44,7 +44,7 @@ jobs:
       - name: Package the library
         run: |
           mkdir -p artifacts
-          pio pkg pack -output artifacts/platformio-library.tar.gz
+          pio pkg pack -o artifacts/platformio-library.tar.gz
       - name: Archive the library package
         uses: actions/upload-artifact@v4
         with:
