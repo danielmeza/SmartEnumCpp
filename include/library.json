@@ -24,13 +24,31 @@
   },
   "examples": [
     {
-      "name": "Examples",
-      "base": "examples",
+      "name": "Basic",
+      "base": "examples/basic",
       "files": [
-        "polymorphic_smart_enum.cpp",
-        "smart_enum_switch.cpp",
-        "basic_smart_enum.cpp",
+        "basic_smart_enum.cpp"
+      ]
+    },
+    {
+      "name": "Switch",
+      "base": "examples/switch",
+      "files": [
+        "mart_enum_switch.cpp"
+      ]
+    },
+    {
+      "name": "Flags",
+      "base": "examples/flags",
+      "files": [
         "smart_flag_enum.cpp"
+      ]
+    },
+    {
+      "name": "Polymorphic",
+      "base": "examples/polymorphic",
+      "files": [
+        "smart_enum_polymorphic.cpp"
       ]
     }
   ],
