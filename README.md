@@ -10,6 +10,15 @@ This project is a C++ port of the Ardalis.SmartEnum C# library providing type-sa
 - **Fluent Switch Interface**: Provides a chainable switch-like API for enums.
 - **Unit Tests**: GoogleTest-based tests verify the behavior.
 
+## Documentation
+
+Detailed documentation for each component:
+
+- [SmartEnum](docs/SmartEnum.md) - Basic enum type with name/value lookup
+- [SmartFlagEnum](docs/SmartFlagEnum.md) - Flag/bitfield enum with combination support
+- [Polymorphic SmartEnum](docs/PolymorphicSmartEnum.md) - Enums with instance-specific behavior
+- [SmartEnumSwitch](docs/SmartEnumSwitch.md) - Fluent interface for switch-like patterns
+
 ## Examples
 
 ### Basic SmartEnum
@@ -72,8 +81,9 @@ public:
     static const PaymentMethod Cash;
     static const PaymentMethod Check;
     
-    // Custom behavior method
+    // Custom behavior methods
     virtual float CalculateProcessingFee(float amount) const = 0;
+    virtual int GetProcessingDays() const = 0;
     
 protected:
     // Protected constructor for derived classes
@@ -88,6 +98,10 @@ public:
     float CalculateProcessingFee(float amount) const override {
         return amount * 0.03f; // 3% fee
     }
+    
+    int GetProcessingDays() const override {
+        return 1; // Processes in 1 day
+    }
 };
 
 class DebitCardPayment : public PaymentMethod {
@@ -96,6 +110,10 @@ public:
     
     float CalculateProcessingFee(float amount) const override {
         return amount * 0.01f; // 1% fee
+    }
+    
+    int GetProcessingDays() const override {
+        return 1; // Processes in 1 day
     }
 };
 
@@ -106,6 +124,10 @@ public:
     float CalculateProcessingFee(float amount) const override {
         return 0.0f; // No fee
     }
+    
+    int GetProcessingDays() const override {
+        return 0; // Immediate processing
+    }
 };
 
 class CheckPayment : public PaymentMethod {
@@ -114,6 +136,10 @@ public:
     
     float CalculateProcessingFee(float amount) const override {
         return 1.0f; // Fixed $1 fee
+    }
+    
+    int GetProcessingDays() const override {
+        return 5; // 5 business days to clear
     }
 };
 
@@ -128,9 +154,19 @@ int main() {
     
     for (const PaymentMethod* method : PaymentMethod::List()) {
         float fee = method->CalculateProcessingFee(purchaseAmount);
+        int days = method->GetProcessingDays();
+        
         std::cout << "Payment method: " << method->Name()
-                  << ", Processing fee: $" << fee << std::endl;
+                  << ", Processing fee: $" << fee
+                  << ", Processing time: " << days << " days"
+                  << std::endl;
     }
+    
+    // Lookup by name
+    const PaymentMethod& selectedMethod = PaymentMethod::FromName("Check");
+    std::cout << "\nSelected method: " << selectedMethod.Name() 
+              << ", Fee: $" << selectedMethod.CalculateProcessingFee(purchaseAmount)
+              << std::endl;
     
     return 0;
 }
@@ -143,37 +179,57 @@ int main() {
 #include <iostream>
 
 // Define a flag enum for permissions
-class Permissions : public SmartFlagEnum<Permissions, int> {
+class FilePermission : public SmartFlagEnum<FilePermission, unsigned int> {
 public:
-    static const Permissions None;
-    static const Permissions Read;
-    static const Permissions Write;
-    static const Permissions Execute;
+    static const FilePermission None;
+    static const FilePermission Read;
+    static const FilePermission Write;
+    static const FilePermission Execute;
+    static const FilePermission Delete;
     
 private:
-    Permissions(const std::string& name, int value) : SmartFlagEnum(name, value) {}
+    FilePermission(const std::string& name, unsigned int value) : SmartFlagEnum(name, value) {}
 };
 
 // Initialize the flag values (must be powers of 2)
-const Permissions Permissions::None("None", 0);
-const Permissions Permissions::Read("Read", 1);
-const Permissions Permissions::Write("Write", 2);
-const Permissions Permissions::Execute("Execute", 4);
+const FilePermission FilePermission::None("None", 0);
+const FilePermission FilePermission::Read("Read", 1);      // 2^0
+const FilePermission FilePermission::Write("Write", 2);    // 2^1
+const FilePermission FilePermission::Execute("Execute", 4); // 2^2
+const FilePermission FilePermission::Delete("Delete", 8);  // 2^3
 
 int main() {
-    // Combine flags using the | operator
-    int rwPermissions = Permissions::Read | Permissions::Write;
+    // Display all defined flags
+    std::cout << "Defined flags:" << std::endl;
+    for (const FilePermission* flag : FilePermission::List()) {
+        std::cout << "  " << flag->Name() << " = " << flag->Value() << std::endl;
+    }
     
-    // Convert back to flag names
-    std::string permissionsStr = Permissions::FromValueToString(rwPermissions);
+    // Combine flags using the | operator
+    unsigned int rwPermissions = FilePermission::Read | FilePermission::Write;
+    std::cout << "Read|Write value: " << rwPermissions << std::endl;
+    
+    // Convert combined value back to string representation
+    std::string permissionsStr = FilePermission::FromValueToString(rwPermissions);
     std::cout << "Permissions: " << permissionsStr << std::endl;
     
     // Get individual flags from a combined value
-    std::vector<const Permissions*> flags = Permissions::FromValue(rwPermissions);
+    std::vector<const FilePermission*> flags = FilePermission::FromValue(rwPermissions);
     std::cout << "Flag count: " << flags.size() << std::endl;
-    for (const Permissions* flag : flags) {
+    for (const FilePermission* flag : flags) {
         std::cout << " - " << flag->Name() << std::endl;
     }
+    
+    // Parse from a comma-separated string
+    std::vector<const FilePermission*> parsedFlags = 
+        FilePermission::FromName("Read, Execute");
+    
+    unsigned int combinedValue = 0;
+    for (const FilePermission* flag : parsedFlags) {
+        combinedValue |= flag->Value();
+    }
+    
+    std::cout << "Parsed from 'Read, Execute': " << combinedValue << std::endl;
     
     return 0;
 }
@@ -187,44 +243,82 @@ int main() {
 #include <iostream>
 
 // Define a simple enum
-class Status : public SmartEnum<Status> {
+class OrderStatus : public SmartEnum<OrderStatus> {
 public:
-    static const Status Pending;
-    static const Status Active;
-    static const Status Suspended;
-    static const Status Closed;
+    static const OrderStatus Created;
+    static const OrderStatus Paid;
+    static const OrderStatus Processing;
+    static const OrderStatus Shipped;
+    static const OrderStatus Delivered;
     
 private:
-    Status(const std::string& name, int value) : SmartEnum(name, value) {}
+    OrderStatus(const std::string& name, int value) : SmartEnum(name, value) {}
 };
 
 // Initialize the status constants
-const Status Status::Pending("Pending", 0);
-const Status Status::Active("Active", 1);
-const Status Status::Suspended("Suspended", 2);
-const Status Status::Closed("Closed", 3);
+const OrderStatus OrderStatus::Created("Created", 1);
+const OrderStatus OrderStatus::Paid("Paid", 2);
+const OrderStatus OrderStatus::Processing("Processing", 3);
+const OrderStatus OrderStatus::Shipped("Shipped", 4);
+const OrderStatus OrderStatus::Delivered("Delivered", 5);
 
-void processStatus(const Status& status) {
-    SwitchOn(status)
-        .When(Status::Pending).Then([]() {
-            std::cout << "Status is pending - awaiting activation" << std::endl;
-        })
-        .When(Status::Active).Then([]() {
-            std::cout << "Status is active - proceed normally" << std::endl;
-        })
-        .When(Status::Suspended).Then([]() {
-            std::cout << "Status is suspended - limited operations allowed" << std::endl;
-        })
-        .Default([]() {
-            std::cout << "Status is closed or unknown" << std::endl;
-        });
-}
+// Order class with status
+class Order {
+private:
+    int id_;
+    OrderStatus status_;
+    
+public:
+    Order(int id, const OrderStatus& status) : id_(id), status_(status) {}
+    
+    int GetId() const { return id_; }
+    const OrderStatus& GetStatus() const { return status_; }
+    void SetStatus(const OrderStatus& status) { status_ = status; }
+    
+    // Process the order based on its status
+    void Process() {
+        std::cout << "Processing Order #" << id_ << " (Status: " << status_.Name() << ")..." << std::endl;
+        
+        // Using the fluent switch interface
+        SwitchOn(status_)
+            .When(OrderStatus::Created).Then([this]() {
+                std::cout << " - New order created, awaiting payment" << std::endl;
+            })
+            .When(OrderStatus::Paid).Then([this]() {
+                std::cout << " - Payment received, preparing to fulfill" << std::endl;
+                this->SetStatus(OrderStatus::Processing);
+            })
+            .When(OrderStatus::Processing).Then([this]() {
+                std::cout << " - Picking items from warehouse" << std::endl;
+                std::cout << " - Packaging order" << std::endl;
+                this->SetStatus(OrderStatus::Shipped);
+            })
+            .When(OrderStatus::Shipped).Then([this]() {
+                std::cout << " - Order has been shipped" << std::endl;
+                std::cout << " - Tracking information sent" << std::endl;
+            })
+            .When(OrderStatus::Delivered).Then([this]() {
+                std::cout << " - Order successfully delivered" << std::endl;
+            })
+            .Default([]() {
+                std::cout << " - Unknown status, review required" << std::endl;
+            });
+            
+        std::cout << "Processing complete. Current status: " << status_.Name() << std::endl;
+    }
+};
 
 int main() {
-    processStatus(Status::Pending);
-    processStatus(Status::Active);
-    processStatus(Status::Suspended);
-    processStatus(Status::Closed);
+    // Create an order
+    Order order(1001, OrderStatus::Created);
+    order.Process();
+    
+    // Update and process the order
+    order.SetStatus(OrderStatus::Paid);
+    order.Process();
+    
+    // The Process method will automatically move this to Shipped
+    order.Process();
     
     return 0;
 }
@@ -250,6 +344,7 @@ classDiagram
     class PaymentMethod {
         <<abstract>>
         +CalculateProcessingFee(float) float
+        +GetProcessingDays() int
         +static CreditCard
         +static DebitCard
         +static Cash
@@ -258,18 +353,22 @@ classDiagram
     
     class CreditCardPayment {
         +CalculateProcessingFee(float) float
+        +GetProcessingDays() int
     }
     
     class DebitCardPayment {
         +CalculateProcessingFee(float) float
+        +GetProcessingDays() int
     }
     
     class CashPayment {
         +CalculateProcessingFee(float) float
+        +GetProcessingDays() int
     }
     
     class CheckPayment {
         +CalculateProcessingFee(float) float
+        +GetProcessingDays() int
     }
     
     SmartEnum <|-- PaymentMethod
@@ -277,22 +376,6 @@ classDiagram
     PaymentMethod <|-- DebitCardPayment
     PaymentMethod <|-- CashPayment
     PaymentMethod <|-- CheckPayment
-```
-
-## Polymorphic Enum Flow
-
-This diagram shows the flow of creating and using polymorphic enums:
-
-```mermaid
-flowchart TD
-    A[Define Base SmartEnum] -->|Inherit From| B[Create Polymorphic Enum Base]
-    B -->|Add Virtual Methods| C[Declare Abstract Behaviors]
-    C -->|Create Specialized Classes| D[Implement Concrete Behaviors]
-    D -->|Initialize Static Instances| E[Create Enum Constants]
-    E -->|Use in Code| F[Call Polymorphic Methods]
-    
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style F fill:#bbf,stroke:#333,stroke-width:2px
 ```
 
 ## Build Instructions

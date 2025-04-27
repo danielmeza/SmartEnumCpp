@@ -86,5 +86,16 @@ int main() {
         std::cout << "Expected error: " << e.what() << std::endl;
     }
     
+    /* Advanced usage (not shown by default):
+     * 
+     * For special flags, you can use these marker interfaces:
+     * 
+     * 1. To allow negative values (like -1 for "All"):
+     *    class MyFlags : public SmartFlagEnum<MyFlags>, public AllowNegativeFlagEnumInput {...};
+     *
+     * 2. To allow non-power-of-two values:
+     *    class MyFlags : public SmartFlagEnum<MyFlags>, public AllowUnsafeFlagEnumValues {...};
+     */
+    
     return 0;
 }

@@ -1,7 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
     "name": "SmartEnumCpp",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "repository": {
         "type": "git",
         "url": "https://github.com/danielmeza/SmartEnumCpp.git",
@@ -28,7 +28,8 @@
     "export": {
         "include": [
             "examples",
-            "include"
+            "include",
+            "docs"
         ],
         "exclude": [
             "test"
@@ -45,9 +46,9 @@
         ]
     },
     "headers": [
-        "SmartEnum/SmartEnum.hpp",
-        "SmartEnum/SmartEnumSwitch.hpp",
-        "SmartEnum/SmartFlagEnum.hpp"
+        "SmartEnumCpp/SmartEnum.hpp",
+        "SmartEnumCpp/SmartEnumSwitch.hpp",
+        "SmartEnumCpp/SmartFlagEnum.hpp"
     ],
     "examples": [
         {

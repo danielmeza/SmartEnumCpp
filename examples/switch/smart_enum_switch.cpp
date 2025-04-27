@@ -110,6 +110,27 @@ std::string GetOrderStatusDescription(const OrderStatus& status) {
     return result;
 }
 
+// Function showing how to use SwitchOn with conditional logic
+bool CanCancelOrder(const OrderStatus& status) {
+    bool canCancel = false;
+    
+    SwitchOn(status)
+        .When(OrderStatus::Created).Then([&canCancel]() {
+            canCancel = true;  // Can cancel before payment
+        })
+        .When(OrderStatus::Paid).Then([&canCancel]() {
+            canCancel = true;  // Can cancel after payment but before processing
+        })
+        .When(OrderStatus::Processing).Then([&canCancel]() {
+            canCancel = true;  // Can still cancel while processing
+        })
+        .Default([&canCancel]() {
+            canCancel = false; // Once shipped or delivered, can't cancel
+        });
+    
+    return canCancel;
+}
+
 int main() {
     std::cout << "==== SmartEnumSwitch Example ====\n" << std::endl;
     
@@ -117,6 +138,7 @@ int main() {
     std::cout << "Available Order Statuses:" << std::endl;
     for (const OrderStatus* status : OrderStatus::List()) {
         std::cout << " - " << status->Name() << ": " << GetOrderStatusDescription(*status) << std::endl;
+        std::cout << "   Can be canceled: " << (CanCancelOrder(*status) ? "Yes" : "No") << std::endl;
     }
     std::cout << std::endl;
     

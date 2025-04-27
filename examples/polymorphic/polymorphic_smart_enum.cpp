@@ -5,14 +5,15 @@
 // Define a polymorphic SmartEnum with custom behavior
 class PaymentMethod : public SmartEnum<PaymentMethod> {
 public:
-    static const PaymentMethod CreditCard;
-    static const PaymentMethod DebitCard;
-    static const PaymentMethod Cash;
-    static const PaymentMethod Check;
+    static const PaymentMethod& CreditCard;
+    static const PaymentMethod& DebitCard;
+    static const PaymentMethod& Cash;
+    static const PaymentMethod& Check;
     
     // Custom behavior methods
     virtual float CalculateProcessingFee(float amount) const = 0;
     virtual int GetProcessingDays() const = 0;
+    virtual bool RequiresVerification() const { return false; } // Default implementation
     
 protected:
     // Protected constructor for derived classes
@@ -31,6 +32,10 @@ public:
     int GetProcessingDays() const override {
         return 1; // Processes in 1 day
     }
+    
+    bool RequiresVerification() const override {
+        return true; // Credit cards need verification
+    }
 };
 
 class DebitCardPayment : public PaymentMethod {
@@ -43,6 +48,10 @@ public:
     
     int GetProcessingDays() const override {
         return 1; // Processes in 1 day
+    }
+    
+    bool RequiresVerification() const override {
+        return true; // Debit cards need verification
     }
 };
 
@@ -72,11 +81,11 @@ public:
     }
 };
 
-// Initialize the payment method constants
-const PaymentMethod PaymentMethod::CreditCard = CreditCardPayment();
-const PaymentMethod PaymentMethod::DebitCard = DebitCardPayment();
-const PaymentMethod PaymentMethod::Cash = CashPayment();
-const PaymentMethod PaymentMethod::Check = CheckPayment();
+// Initialize the payment method constants as references to prevent object slicing
+const PaymentMethod& PaymentMethod::CreditCard = CreditCardPayment();
+const PaymentMethod& PaymentMethod::DebitCard = DebitCardPayment();
+const PaymentMethod& PaymentMethod::Cash = CashPayment();
+const PaymentMethod& PaymentMethod::Check = CheckPayment();
 
 int main() {
     float purchaseAmount = 100.0f;
@@ -84,16 +93,18 @@ int main() {
     std::cout << std::fixed << std::setprecision(2); // Format output
     std::cout << "Purchase amount: $" << purchaseAmount << std::endl << std::endl;
     
-    std::cout << "Payment Method | Processing Fee | Processing Days" << std::endl;
-    std::cout << "---------------|---------------|----------------" << std::endl;
+    std::cout << "Payment Method | Processing Fee | Processing Days | Requires Verification" << std::endl;
+    std::cout << "---------------|---------------|----------------|---------------------" << std::endl;
     
     for (const PaymentMethod* method : PaymentMethod::List()) {
         float fee = method->CalculateProcessingFee(purchaseAmount);
         int days = method->GetProcessingDays();
+        bool needsVerification = method->RequiresVerification();
         
         std::cout << std::left << std::setw(15) << method->Name() 
                   << "| $" << std::right << std::setw(12) << fee 
-                  << " | " << std::setw(15) << days << std::endl;
+                  << " | " << std::setw(16) << days 
+                  << " | " << std::setw(19) << (needsVerification ? "Yes" : "No") << std::endl;
     }
     
     // Use lookup to find a specific payment method
@@ -101,6 +112,11 @@ int main() {
     std::cout << "\nSelected payment method: " << selectedMethod.Name() << std::endl;
     std::cout << "Fee: $" << selectedMethod.CalculateProcessingFee(purchaseAmount) << std::endl;
     std::cout << "Processing time: " << selectedMethod.GetProcessingDays() << " days" << std::endl;
+    
+    // Using the enum in a conditional expression
+    if (selectedMethod.GetProcessingDays() > 3) {
+        std::cout << "Warning: This payment method takes longer than 3 days to process." << std::endl;
+    }
     
     return 0;
 }
