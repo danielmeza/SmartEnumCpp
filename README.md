@@ -1,6 +1,6 @@
 # SmartEnumProject
 
-This project is a C++ port of the Ardalis.SmartEnum C# library providing type-safe "smart" enum types and flag enums.
+This project is a C++ port of the [Ardalis.SmartEnum](https://github.com/ardalis/SmartEnum) C# library providing type-safe "smart" enum types and flag enums.
 
 ## Features
 

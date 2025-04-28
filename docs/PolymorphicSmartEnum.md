@@ -57,10 +57,10 @@ int getProcessingDays(PaymentType type) {
 
 class PaymentMethod : public SmartEnum<PaymentMethod> {
 public:
-    static const PaymentMethod CreditCard;
-    static const PaymentMethod DebitCard;
-    static const PaymentMethod Cash;
-    static const PaymentMethod Check;
+    static const PaymentMethod& CreditCard;
+    static const PaymentMethod& DebitCard;
+    static const PaymentMethod& Cash;
+    static const PaymentMethod& Check;
     
     // Behavior defined right on the enum
     virtual float calculateFee(float amount) const = 0;
@@ -85,10 +85,10 @@ public:
 };
 
 // Initialize the constants with specific implementations
-const PaymentMethod PaymentMethod::CreditCard = CreditCardPayment();
-const PaymentMethod PaymentMethod::DebitCard = DebitCardPayment();
-const PaymentMethod PaymentMethod::Cash = CashPayment();
-const PaymentMethod PaymentMethod::Check = CheckPayment();
+const PaymentMethod& PaymentMethod::CreditCard = CreditCardPayment();
+const PaymentMethod& PaymentMethod::DebitCard = DebitCardPayment();
+const PaymentMethod& PaymentMethod::Cash = CashPayment();
+const PaymentMethod& PaymentMethod::Check = CheckPayment();
 
 // Benefits:
 // 1. Behavior is encapsulated with each enum value
@@ -107,10 +107,10 @@ const PaymentMethod PaymentMethod::Check = CheckPayment();
 // 1. Define the base class with virtual methods
 class PaymentMethod : public SmartEnum<PaymentMethod> {
 public:
-    static const PaymentMethod CreditCard;
-    static const PaymentMethod DebitCard;
-    static const PaymentMethod Cash;
-    static const PaymentMethod Check;
+    static const PaymentMethod& CreditCard;
+    static const PaymentMethod& DebitCard;
+    static const PaymentMethod& Cash;
+    static const PaymentMethod& Check;
     
     // Define abstract behaviors
     virtual float calculateFee(float amount) const = 0;
@@ -175,10 +175,10 @@ public:
 };
 
 // 3. Initialize the constants with specific implementations
-const PaymentMethod PaymentMethod::CreditCard = CreditCardPayment();
-const PaymentMethod PaymentMethod::DebitCard = DebitCardPayment();
-const PaymentMethod PaymentMethod::Cash = CashPayment();
-const PaymentMethod PaymentMethod::Check = CheckPayment();
+const PaymentMethod& PaymentMethod::CreditCard = CreditCardPayment();
+const PaymentMethod& PaymentMethod::DebitCard = DebitCardPayment();
+const PaymentMethod& PaymentMethod::Cash = CashPayment();
+const PaymentMethod& PaymentMethod::Check = CheckPayment();
 ```
 
 ### Using Polymorphic SmartEnum Values
@@ -245,5 +245,5 @@ public:
 };
 
 // Create with different configurations
-const PaymentMethod CustomPayment = ConfigurablePayment("Custom", 10, 0.05f);
+const PaymentMethod& CustomPayment = ConfigurablePayment("Custom", 10, 0.05f);
 ```
